@@ -241,3 +241,31 @@ class SegmentationModel(object):
         self.models = models
         self.total_obs_distribution = total_obs_distribution
         return models, total_obs_distribution
+
+
+    def save(self, path):
+        import pickle
+        with open(path, 'wb') as f:
+            pickle.dump({
+                'models': self.models,
+                'total_obs_distribution': self.total_obs_distribution,
+                'data_distribution': self.data_distribution,
+                'sampling_frequency': self.sampling_frequency,
+                'feature_frequency': self.feature_frequency,
+            }, f)
+
+    @staticmethod
+    def load(path, feature_extractor=None):
+        import pickle
+        with open(path, 'rb') as f:
+            data = pickle.load(f)
+
+        model = SegmentationModel(
+            feature_extractor=feature_extractor,
+            sampling_frequency=data['sampling_frequency'],
+            feature_frequency=data['feature_frequency']
+        )
+        model.models = data['models']
+        model.total_obs_distribution = data['total_obs_distribution']
+        model.data_distribution = data['data_distribution']
+        return model
