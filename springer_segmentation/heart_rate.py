@@ -1,6 +1,6 @@
-from extract_features import get_butterworth_high_pass_filter, get_butterworth_low_pass_filter, \
+from springer_segmentation.extract_features import get_butterworth_high_pass_filter, get_butterworth_low_pass_filter, \
     get_homomorphic_envelope_with_hilbert
-from extract_features import schmidt_spike_removal
+from springer_segmentation.extract_features import schmidt_spike_removal
 
 import numpy as np
 from scipy.signal import correlate, find_peaks

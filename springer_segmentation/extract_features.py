@@ -1,7 +1,7 @@
 import numpy as np
 from scipy import signal as signal
 from scipy.signal import butter, filtfilt, hilbert
-from get_dwt import getDWT
+from springer_segmentation.get_dwt import getDWT
 from librosa import resample
 
 def preprocess_audio(audio, process_list):

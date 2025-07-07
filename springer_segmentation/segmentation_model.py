@@ -2,10 +2,10 @@ import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 
-from duration_distributions import DataDistribution
-from extract_features import get_all_features, get_default_features
-from heart_rate import get_heart_rate
-from viterbi import viterbi_segment
+from springer_segmentation.duration_distributions import DataDistribution
+from springer_segmentation.extract_features import get_default_features
+from springer_segmentation.heart_rate import get_heart_rate
+from springer_segmentation.viterbi import viterbi_segment
 
 
 class SegmentationModel(object):
@@ -257,15 +257,25 @@ class SegmentationModel(object):
     @staticmethod
     def load(path, feature_extractor=None):
         import pickle
+        from springer_segmentation.duration_distributions import DataDistribution
+
         with open(path, 'rb') as f:
             data = pickle.load(f)
 
         model = SegmentationModel(
             feature_extractor=feature_extractor,
-            sampling_frequency=data['sampling_frequency'],
-            feature_frequency=data['feature_frequency']
+            sampling_frequency=data.get('sampling_frequency', 4000),
+            feature_frequency=data.get('feature_frequency', 50)
         )
+
         model.models = data['models']
         model.total_obs_distribution = data['total_obs_distribution']
-        model.data_distribution = data['data_distribution']
+
+        # 🛡️ Sicheres Handling für data_distribution
+        dd = data.get('data_distribution', DataDistribution)
+        if isinstance(dd, type):
+            model.data_distribution = dd()
+        else:
+            model.data_distribution = dd
+
         return model

@@ -37,6 +37,7 @@ def create_train_test_split(directory="tiny_test",
             _, recording = scipy.io.wavfile.read(os.path.join(directory, file_))
 
             tsv_segmentation = np.loadtxt(segmentation_file, delimiter="\t")
+            #tsv_segmentation = np.loadtxt(segmentation_file, delimiter="\t", ndmin=2)
             if file_[:5] in train_ids:
                 train_wavs.append(recording)
                 train_segs.append(tsv_segmentation)
@@ -76,6 +77,7 @@ def get_wavs_and_tsvs(input_folder="tiny_test", return_names=False):
                 names.append(file_)
 
             tsv_segmentation = np.loadtxt(segmentation_file, delimiter="\t")
+            #tsv_segmentation = np.loadtxt(segmentation_file, delimiter="\t", ndmin=2)
             tsv_arrays.append(tsv_segmentation)
     if return_names:
         return wav_arrays, tsv_arrays, names
