@@ -2,10 +2,10 @@ import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 
-from duration_distributions import DataDistribution
-from extract_features import get_all_features, get_default_features
-from heart_rate import get_heart_rate
-from viterbi import viterbi_segment
+from springer_segmentation.duration_distributions import DataDistribution
+from springer_segmentation.extract_features import get_default_features
+from springer_segmentation.heart_rate import get_heart_rate
+from springer_segmentation.viterbi import viterbi_segment
 
 
 class SegmentationModel(object):
@@ -241,3 +241,41 @@ class SegmentationModel(object):
         self.models = models
         self.total_obs_distribution = total_obs_distribution
         return models, total_obs_distribution
+
+
+    def save(self, path):
+        import pickle
+        with open(path, 'wb') as f:
+            pickle.dump({
+                'models': self.models,
+                'total_obs_distribution': self.total_obs_distribution,
+                'data_distribution': self.data_distribution,
+                'sampling_frequency': self.sampling_frequency,
+                'feature_frequency': self.feature_frequency,
+            }, f)
+
+    @staticmethod
+    def load(path, feature_extractor=None):
+        import pickle
+        from springer_segmentation.duration_distributions import DataDistribution
+
+        with open(path, 'rb') as f:
+            data = pickle.load(f)
+
+        model = SegmentationModel(
+            feature_extractor=feature_extractor,
+            sampling_frequency=data.get('sampling_frequency', 4000),
+            feature_frequency=data.get('feature_frequency', 50)
+        )
+
+        model.models = data['models']
+        model.total_obs_distribution = data['total_obs_distribution']
+
+        # 🛡️ Sicheres Handling für data_distribution
+        dd = data.get('data_distribution', DataDistribution)
+        if isinstance(dd, type):
+            model.data_distribution = dd()
+        else:
+            model.data_distribution = dd
+
+        return model
